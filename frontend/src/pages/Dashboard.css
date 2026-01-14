@@ -1,0 +1,187 @@
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.filters-card {
+    padding: var(--space-lg);
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        gap: var(--space-md);
+        align-items: flex-start;
+    }
+}
+
+/* KPI Cards */
+.kpi-card {
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.kpi-score {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.kpi-gaps {
+    color: var(--red);
+}
+
+.kpi-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+}
+
+/* Charts */
+.chart-container {
+    height: 300px;
+    padding: var(--space-md);
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+}
+
+/* Gaps */
+.gaps-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.gap-item {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border-left: 4px solid;
+}
+
+.gap-item.priority-high {
+    border-left-color: var(--danger);
+}
+
+.gap-item.priority-medium {
+    border-left-color: var(--warning);
+}
+
+.gap-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.priority-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 10px;
+    color: white;
+}
+
+.priority-badge.high {
+    background: var(--danger);
+}
+
+.priority-badge.medium {
+    background: var(--warning);
+}
+
+.gap-title {
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+.gap-score {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.gap-recommendation {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* New Indicators and Badges */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.traffic-light {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+/* Empty & Loading States */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin-bottom: var(--space-sm);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+}
+
+.loading-state,
+.error-state {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--text-secondary);
+}
+
+.error-state {
+    color: var(--red);
+}

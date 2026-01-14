@@ -1,0 +1,78 @@
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.filters-row {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.filters-row .form-group {
+    min-width: 200px;
+}
+
+.level-badge {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.level-badge.state {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.level-badge.jurisdiction {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+}
+
+.status-badge {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge.completed {
+    background: var(--green-bg);
+    color: var(--green);
+}
+
+.status-badge.draft {
+    background: var(--yellow-bg);
+    color: var(--yellow);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.btn-danger-text {
+    color: var(--red);
+}
+
+.btn-danger-text:hover {
+    background: var(--red-bg);
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.empty-state p {
+    margin-bottom: var(--space-md);
+    color: var(--text-secondary);
+}
+
+.loading-state {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--text-secondary);
+}

@@ -1,0 +1,120 @@
+.admin-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.admin-tab {
+    padding: var(--space-md) var(--space-lg);
+    background: var(--secondary-bg);
+    border: 2px solid var(--tertiary-bg);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.admin-tab:hover {
+    border-color: var(--accent);
+}
+
+.admin-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.role-badge {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.role-badge.admin {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.role-badge.writer {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.role-badge.reader {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+}
+
+.catalogs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.catalog-item {
+    padding: var(--space-md);
+    background: var(--primary-bg);
+    border-radius: var(--radius-md);
+}
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.catalog-code {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-lg);
+}
+
+.modal {
+    background: var(--secondary-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal h2 {
+    margin-bottom: var(--space-lg);
+}
+
+.modal .form-group {
+    margin-bottom: var(--space-md);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+}
+
+.btn-danger-text {
+    color: var(--red);
+}
+
+.btn-danger-text:hover {
+    background: var(--red-bg);
+}

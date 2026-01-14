@@ -1,7 +1,9 @@
 # Backend Dependencies
 fastapi
 uvicorn[standard]
+gunicorn
 sqlalchemy
+psycopg2-binary
 pydantic
 pydantic-settings
 python-jose[cryptography]
@@ -9,3 +11,5 @@ passlib[bcrypt]
 python-multipart
 pandas
 openpyxl
+pymupdf
+

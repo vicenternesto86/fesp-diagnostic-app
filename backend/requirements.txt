@@ -4,7 +4,7 @@ uvicorn[standard]
 gunicorn
 sqlalchemy
 psycopg2-binary
-pydantic
+pydantic[email]
 pydantic-settings
 python-jose[cryptography]
 passlib[bcrypt]
@@ -12,4 +12,5 @@ python-multipart
 pandas
 openpyxl
 pymupdf
+
 

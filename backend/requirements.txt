@@ -8,9 +8,11 @@ pydantic[email]
 pydantic-settings
 python-jose[cryptography]
 passlib[bcrypt]
+argon2-cffi
 python-multipart
 pandas
 openpyxl
 pymupdf
+
 
 

@@ -121,7 +121,7 @@ export const dashboardService = {
 
 // Reports
 export const reportsService = {
-    downloadPdf: async (assessmentId) => {
+    downloadHtml: async (assessmentId) => {
         const response = await api.get(`/reports/pdf/${assessmentId}`, {
             responseType: 'blob',
         });

@@ -131,18 +131,18 @@ function Dashboard() {
         }
     }, [selectedAssessment]);
 
-    const handleDownloadPdf = async () => {
+    const handleDownloadHtml = async () => {
         if (!selectedAssessment) return;
         try {
-            const blob = await reportsService.downloadPdf(selectedAssessment);
+            const blob = await reportsService.downloadHtml(selectedAssessment);
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `FESP_Reporte_${dashboardData?.unit_name || 'evaluacion'}.pdf`;
+            a.download = `FESP_Reporte_${dashboardData?.unit_name || 'evaluacion'}.html`;
             a.click();
             window.URL.revokeObjectURL(url);
         } catch (err) {
-            alert('Error descargando PDF');
+            alert('Error descargando reporte');
         }
     };
 
@@ -243,8 +243,8 @@ function Dashboard() {
                 <div className="dashboard-header">
                     <h1>Dashboard de Desempeño FESP</h1>
                     <div className="dashboard-actions">
-                        <button className="btn-primary" onClick={handleDownloadPdf} disabled={!dashboardData}>
-                            📄 Descargar Reporte PDF
+                        <button className="btn-primary" onClick={handleDownloadHtml} disabled={!dashboardData}>
+                            📄 Descargar Reporte HTML
                         </button>
                         <button className="btn-secondary" onClick={handleDownloadCsv}>
                             📊 Exportar Histórico CSV

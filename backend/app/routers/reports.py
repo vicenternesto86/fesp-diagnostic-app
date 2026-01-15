@@ -268,22 +268,47 @@ async def download_pdf(
     try:
         import pymupdf
         
-        # Create PDF using pymupdf Story
-        story = pymupdf.Story(html_content)
-        
-        # Create a PDF document
+        # Create a simple PDF from text content
         doc = pymupdf.open()
         
-        # Letter size in points (8.5 x 11 inches)
-        rect = pymupdf.Rect(0, 0, 612, 792)
-        content_rect = rect + (36, 36, -36, -36)  # 0.5 inch margins
+        # Create summary text
+        text_content = f"""
+DIAGNÓSTICO RÁPIDO FESP
+{unit_name}
+Fecha: {assessment.cutoff_date}
+
+═══════════════════════════════════════════════════════
+RESUMEN EJECUTIVO
+═══════════════════════════════════════════════════════
+
+Cumplimiento General: {summary['overall_compliance']:.1f}%
+Semáforo: {summary['traffic_light'].upper()}
+Brechas Críticas: {summary['gap_count']}
+
+═══════════════════════════════════════════════════════
+RESULTADOS POR FESP
+═══════════════════════════════════════════════════════
+
+"""
+        for fesp in summary["fesp_scores"]:
+            text_content += f"FESP {fesp['fesp_number']} - {fesp['fesp_name']}\n"
+            text_content += f"   Puntos: {fesp['earned_points']} / {fesp['max_points']}  |  Cumplimiento: {fesp['compliance_percentage']}%  |  Nivel: {fesp['level']}\n\n"
         
-        # Place the story
-        more = True
-        while more:
-            page = doc.new_page(width=rect.width, height=rect.height)
-            more, _ = story.place(content_rect)
-            story.draw(page)
+        text_content += """
+═══════════════════════════════════════════════════════
+BRECHAS Y RECOMENDACIONES
+═══════════════════════════════════════════════════════
+
+"""
+        for gap in summary["gaps"]:
+            text_content += f"[{gap['priority'].upper()}] {gap['item_name']} (FESP {gap['fesp_id'].replace('fesp_', '')})\n"
+            text_content += f"   Puntaje: {gap['score']} / {gap['max_points']}\n"
+            text_content += f"   Recomendación: {gap['recommendation']}\n\n"
+        
+        # Create PDF pages from text
+        page = doc.new_page(width=612, height=792)  # Letter size
+        text_rect = pymupdf.Rect(50, 50, 562, 742)  # Margins
+        page.insert_textbox(text_rect, text_content, fontsize=10, fontname="helv")
         
         # Get PDF bytes
         pdf_bytes = doc.tobytes()

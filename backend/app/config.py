@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://fesp-dx.vercel.app",
+        "https://fesp-5zmbvchki-vicenternesto86s-projects.vercel.app",
         os.getenv("FRONTEND_URL", ""),
     ]
     

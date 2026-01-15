@@ -12,8 +12,8 @@ from app.config import settings
 from app.database import get_db
 from app.models.user import User
 
-# Password hashing - using argon2 (more modern and compatible)
-pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
+# Password hashing - using bcrypt for cross-platform compatibility
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")

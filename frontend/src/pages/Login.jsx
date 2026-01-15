@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logoSalud from '../assets/logo-salud.png';
+import logoSnsp from '../assets/logo-snsp.png';
 import './Login.css';
 
 function Login() {
@@ -31,7 +32,10 @@ function Login() {
         <div className="login-page">
             <div className="login-container">
                 <div className="login-header">
-                    <img src={logoSalud} alt="Secretaría de Salud" className="login-logo-img" />
+                    <div className="login-logos">
+                        <img src={logoSalud} alt="Secretaría de Salud" className="login-logo-img" />
+                        <img src={logoSnsp} alt="SNSP" className="login-logo-snsp" />
+                    </div>
                     <h1>FESP Diagnóstico</h1>
                     <p>Instrumento Consolidado de Diagnóstico Rápido</p>
                 </div>

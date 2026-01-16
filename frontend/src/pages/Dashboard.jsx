@@ -14,7 +14,6 @@ import {
     Legend,
 } from 'chart.js';
 import { statesService, dashboardService, reportsService, assessmentsService } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
 ChartJS.register(
@@ -37,7 +36,8 @@ const TRAFFIC_COLORS = {
 };
 
 function Dashboard() {
-    const { user } = useAuth();
+    // User is always admin in open access mode
+    const user = { role: 'admin', name: 'Administrador' };
     const [states, setStates] = useState([]);
     const [jurisdictions, setJurisdictions] = useState([]);
     const [assessments, setAssessments] = useState([]);

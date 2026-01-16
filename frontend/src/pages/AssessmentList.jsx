@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { assessmentsService, statesService } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import './AssessmentList.css';
 
 function AssessmentList() {
-    const { user, isWriter, isAdmin } = useAuth();
+    // Open access - always has full permissions
+    const user = { role: 'admin' };
+    const isWriter = () => true;
+    const isAdmin = () => true;
     const [assessments, setAssessments] = useState([]);
     const [states, setStates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
-        state_id: user?.state_id?.toString() || '',
+        state_id: '',
         status_filter: '',
     });
 

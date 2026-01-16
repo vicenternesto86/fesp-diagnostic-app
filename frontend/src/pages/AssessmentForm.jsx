@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { statesService, assessmentsService } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import './AssessmentForm.css';
 
 const BLOCK_INFO = {
@@ -23,7 +22,9 @@ const SCORE_LABELS = [
 function AssessmentForm() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user, isWriter } = useAuth();
+    // Open access - always has write permission
+    const user = { role: 'admin' };
+    const isWriter = () => true;
     const isEdit = Boolean(id);
 
     const [states, setStates] = useState([]);

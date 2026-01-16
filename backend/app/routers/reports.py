@@ -12,8 +12,6 @@ from datetime import datetime
 from app.database import get_db
 from app.models.assessment import Assessment
 from app.fesp_items import FESP_ITEMS, get_all_items
-from app.models.user import User
-from app.utils.auth import get_current_user
 from app.utils.calculations import (
     calculate_traffic_light, calculate_fesp_scores,
     calculate_capability_scores, calculate_policy_cycle_scores,
@@ -225,8 +223,7 @@ def generate_pdf_html(assessment: Assessment, summary: dict) -> str:
 @router.get("/pdf/{assessment_id}")
 async def download_pdf(
     assessment_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Generate and download PDF report"""
     assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
@@ -279,8 +276,7 @@ async def download_pdf(
 async def download_csv(
     state_id: Optional[int] = None,
     jurisdiction_id: Optional[int] = None,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Export assessments data as CSV"""
     query = db.query(Assessment).filter(Assessment.status == "completed")

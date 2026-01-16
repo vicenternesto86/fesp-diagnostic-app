@@ -1,5 +1,5 @@
 """
-Assessments Router
+Assessments Router - Open Access (No Authentication)
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -10,29 +10,12 @@ from app.models.assessment import Assessment, AssessmentItem
 from app.fesp_items import FESP_ITEMS, get_all_items
 from app.models.state import State
 from app.models.jurisdiction import Jurisdiction
-from app.models.user import User
 from app.schemas.assessment import (
     AssessmentCreate, AssessmentUpdate, AssessmentResponse, 
     AssessmentWithItems, AssessmentItemCreate
 )
-from app.utils.auth import get_current_user, require_writer
 
 router = APIRouter(prefix="/api/assessments", tags=["Evaluaciones"])
-
-
-def check_user_permission(user: User, state_id: int, jurisdiction_id: Optional[int]) -> bool:
-    """Check if user has permission to access/modify this assessment"""
-    if user.role == "admin":
-        return True
-    
-    # Writers can only access their assigned state/jurisdiction
-    if user.role == "writer":
-        if user.state_id and user.state_id != state_id:
-            return False
-        if user.jurisdiction_id and jurisdiction_id and user.jurisdiction_id != jurisdiction_id:
-            return False
-    
-    return True
 
 
 @router.get("/", response_model=List[AssessmentResponse])
@@ -43,8 +26,7 @@ def list_assessments(
     status_filter: Optional[str] = None,
     from_date: Optional[date] = None,
     to_date: Optional[date] = None,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """List assessments with filters"""
     query = db.query(Assessment)
@@ -63,29 +45,18 @@ def list_assessments(
     if to_date:
         query = query.filter(Assessment.cutoff_date <= to_date)
     
-    # Non-admin users can only see their assigned state/jurisdiction
-    if current_user.role != "admin":
-        if current_user.state_id:
-            query = query.filter(Assessment.state_id == current_user.state_id)
-        if current_user.jurisdiction_id:
-            query = query.filter(Assessment.jurisdiction_id == current_user.jurisdiction_id)
-    
     return query.order_by(Assessment.cutoff_date.desc()).all()
 
 
 @router.get("/{assessment_id}", response_model=AssessmentWithItems)
 def get_assessment(
     assessment_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Get assessment with all items"""
     assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
     if not assessment:
         raise HTTPException(status_code=404, detail="Evaluación no encontrada")
-    
-    if not check_user_permission(current_user, assessment.state_id, assessment.jurisdiction_id):
-        raise HTTPException(status_code=403, detail="No tiene permiso para ver esta evaluación")
     
     # Build response with state/jurisdiction names
     result = AssessmentWithItems.model_validate(assessment)
@@ -98,8 +69,7 @@ def get_assessment(
 @router.post("/", response_model=AssessmentWithItems, status_code=status.HTTP_201_CREATED)
 def create_assessment(
     data: AssessmentCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_writer)
+    db: Session = Depends(get_db)
 ):
     """Create a new assessment with items"""
     # Verify state exists
@@ -115,18 +85,14 @@ def create_assessment(
         if not jurisdiction:
             raise HTTPException(status_code=400, detail="Jurisdicción no existe")
     
-    # Check permission
-    if not check_user_permission(current_user, data.state_id, data.jurisdiction_id):
-        raise HTTPException(status_code=403, detail="No tiene permiso para crear evaluaciones en esta unidad")
-    
-    # Create assessment
+    # Create assessment (using user 1 as default creator)
     assessment = Assessment(
         level=data.level,
         state_id=data.state_id,
         jurisdiction_id=data.jurisdiction_id,
         cutoff_date=data.cutoff_date,
         status="draft",
-        created_by=current_user.id
+        created_by=1  # Default admin user
     )
     db.add(assessment)
     db.flush()  # Get the ID
@@ -164,16 +130,12 @@ def create_assessment(
 def update_assessment(
     assessment_id: int,
     data: AssessmentUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_writer)
+    db: Session = Depends(get_db)
 ):
     """Update assessment and its items"""
     assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
     if not assessment:
         raise HTTPException(status_code=404, detail="Evaluación no encontrada")
-    
-    if not check_user_permission(current_user, assessment.state_id, assessment.jurisdiction_id):
-        raise HTTPException(status_code=403, detail="No tiene permiso para modificar esta evaluación")
     
     # Update basic fields
     if data.cutoff_date:
@@ -207,17 +169,12 @@ def update_assessment(
 @router.delete("/{assessment_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_assessment(
     assessment_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_writer)
+    db: Session = Depends(get_db)
 ):
     """Delete an assessment"""
     assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
     if not assessment:
         raise HTTPException(status_code=404, detail="Evaluación no encontrada")
-    
-    # Only admin can delete
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Solo administradores pueden eliminar evaluaciones")
     
     db.delete(assessment)
     db.commit()

@@ -1,5 +1,5 @@
 """
-States Router
+States Router - Open Access (No Authentication)
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -7,8 +7,6 @@ from typing import List
 from app.database import get_db
 from app.models.state import State
 from app.schemas.state import StateCreate, StateResponse, StateUpdate
-from app.utils.auth import get_current_user, require_admin
-from app.models.user import User
 
 router = APIRouter(prefix="/api/states", tags=["Estados"])
 
@@ -16,8 +14,7 @@ router = APIRouter(prefix="/api/states", tags=["Estados"])
 @router.get("/", response_model=List[StateResponse])
 def list_states(
     active_only: bool = True,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """List all states"""
     query = db.query(State)
@@ -29,8 +26,7 @@ def list_states(
 @router.get("/{state_id}", response_model=StateResponse)
 def get_state(
     state_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Get a specific state"""
     state = db.query(State).filter(State.id == state_id).first()
@@ -42,10 +38,9 @@ def get_state(
 @router.post("/", response_model=StateResponse, status_code=status.HTTP_201_CREATED)
 def create_state(
     state_data: StateCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin)
+    db: Session = Depends(get_db)
 ):
-    """Create a new state (Admin only)"""
+    """Create a new state"""
     existing = db.query(State).filter(
         (State.name == state_data.name) | (State.code == state_data.code)
     ).first()
@@ -63,10 +58,9 @@ def create_state(
 def update_state(
     state_id: int,
     state_data: StateUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin)
+    db: Session = Depends(get_db)
 ):
-    """Update a state (Admin only)"""
+    """Update a state"""
     state = db.query(State).filter(State.id == state_id).first()
     if not state:
         raise HTTPException(status_code=404, detail="Estado no encontrado")
@@ -82,10 +76,9 @@ def update_state(
 @router.delete("/{state_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_state(
     state_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin)
+    db: Session = Depends(get_db)
 ):
-    """Delete a state (Admin only)"""
+    """Delete a state"""
     state = db.query(State).filter(State.id == state_id).first()
     if not state:
         raise HTTPException(status_code=404, detail="Estado no encontrado")

@@ -5,53 +5,11 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 60000, // 60 seconds to handle Render free tier cold starts
+    timeout: 60000, // 60 seconds for slow connections
     headers: {
         'Content-Type': 'application/json',
     },
 });
-
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-// Handle auth errors - but not on the login endpoint itself
-api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        // Don't redirect on login failures - let the login page handle it
-        const isLoginEndpoint = error.config?.url?.includes('/auth/login');
-
-        if (error.response?.status === 401 && !isLoginEndpoint) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
-    }
-);
-
-// Auth
-export const authService = {
-    login: async (email, password) => {
-        const formData = new URLSearchParams();
-        formData.append('username', email);
-        formData.append('password', password);
-        const response = await api.post('/auth/login', formData, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        });
-        return response.data;
-    },
-    getMe: async () => {
-        const response = await api.get('/auth/me');
-        return response.data;
-    },
-};
 
 // States
 export const statesService = {
@@ -59,9 +17,17 @@ export const statesService = {
         const response = await api.get('/states');
         return response.data;
     },
-    getJurisdictions: async (stateId) => {
-        const response = await api.get(`/jurisdictions/by-state/${stateId}`);
+    get: async (id) => {
+        const response = await api.get(`/states/${id}`);
         return response.data;
+    },
+};
+
+// Jurisdictions
+export const jurisdictionsService = {
+    getByState: async (stateId) => {
+        const response = await api.get(`/states/${stateId}`);
+        return response.data.jurisdictions || [];
     },
 };
 
@@ -103,19 +69,23 @@ export const dashboardService = {
         return response.data;
     },
     getLatest: async (stateId, jurisdictionId = null) => {
-        const params = new URLSearchParams({ state_id: stateId });
-        if (jurisdictionId) params.append('jurisdiction_id', jurisdictionId);
-        const response = await api.get(`/dashboard/latest?${params}`);
+        let url = `/dashboard/latest?state_id=${stateId}`;
+        if (jurisdictionId) {
+            url += `&jurisdiction_id=${jurisdictionId}`;
+        }
+        const response = await api.get(url);
         return response.data;
     },
     compare: async (id1, id2) => {
         const response = await api.get(`/dashboard/compare?assessment_id_1=${id1}&assessment_id_2=${id2}`);
         return response.data;
     },
-    getHistory: async (stateId, jurisdictionId = null) => {
-        const params = new URLSearchParams({ state_id: stateId });
-        if (jurisdictionId) params.append('jurisdiction_id', jurisdictionId);
-        const response = await api.get(`/dashboard/history?${params}`);
+    getHistory: async (stateId, jurisdictionId = null, limit = 10) => {
+        let url = `/dashboard/history?state_id=${stateId}&limit=${limit}`;
+        if (jurisdictionId) {
+            url += `&jurisdiction_id=${jurisdictionId}`;
+        }
+        const response = await api.get(url);
         return response.data;
     },
 };
@@ -140,23 +110,17 @@ export const reportsService = {
     },
 };
 
-// Users (Admin)
+// For backward compatibility
+export const authService = {
+    login: async () => ({ user: { name: 'Administrador', role: 'admin' } }),
+    getMe: async () => ({ name: 'Administrador', role: 'admin' }),
+};
+
 export const usersService = {
-    list: async () => {
-        const response = await api.get('/users');
-        return response.data;
-    },
-    create: async (data) => {
-        const response = await api.post('/users', data);
-        return response.data;
-    },
-    update: async (id, data) => {
-        const response = await api.put(`/users/${id}`, data);
-        return response.data;
-    },
-    delete: async (id) => {
-        await api.delete(`/users/${id}`);
-    },
+    list: async () => [],
+    create: async () => ({}),
+    update: async () => ({}),
+    delete: async () => { },
 };
 
 export default api;

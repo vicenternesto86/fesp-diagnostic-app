@@ -1,14 +1,12 @@
 """
-Dashboard Router
+Dashboard Router - Open Access (No Authentication)
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
 from app.database import get_db
 from app.models.assessment import Assessment, AssessmentItem
-from app.models.user import User
 from app.schemas.dashboard import DashboardSummary, CompareResult
-from app.utils.auth import get_current_user
 from app.utils.calculations import (
     calculate_traffic_light, calculate_fesp_scores,
     calculate_capability_scores, calculate_policy_cycle_scores,
@@ -21,8 +19,7 @@ router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 @router.get("/summary/{assessment_id}", response_model=DashboardSummary)
 def get_dashboard_summary(
     assessment_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Get dashboard summary for a specific assessment"""
     assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
@@ -73,8 +70,7 @@ def get_dashboard_summary(
 def get_latest_assessment(
     state_id: int,
     jurisdiction_id: Optional[int] = None,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Get the most recent completed assessment for a unit"""
     query = db.query(Assessment).filter(
@@ -92,19 +88,18 @@ def get_latest_assessment(
     if not assessment:
         raise HTTPException(status_code=404, detail="No hay evaluaciones completadas")
     
-    return get_dashboard_summary(assessment.id, db, current_user)
+    return get_dashboard_summary(assessment.id, db)
 
 
 @router.get("/compare", response_model=CompareResult)
 def compare_assessments(
     assessment_id_1: int,
     assessment_id_2: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Compare two assessments side by side"""
-    summary1 = get_dashboard_summary(assessment_id_1, db, current_user)
-    summary2 = get_dashboard_summary(assessment_id_2, db, current_user)
+    summary1 = get_dashboard_summary(assessment_id_1, db)
+    summary2 = get_dashboard_summary(assessment_id_2, db)
     
     return CompareResult(unit1=summary1, unit2=summary2)
 
@@ -114,8 +109,7 @@ def get_assessment_history(
     state_id: int,
     jurisdiction_id: Optional[int] = None,
     limit: int = 10,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Get historical assessments for trend analysis"""
     query = db.query(Assessment).filter(

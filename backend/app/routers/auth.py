@@ -8,7 +8,7 @@ from datetime import timedelta
 from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserLogin, Token, UserResponse
-from app.utils.auth import verify_password, create_access_token, get_current_user
+from app.utils.auth import verify_password, create_access_token, get_current_user, get_password_hash
 from app.config import settings
 
 router = APIRouter(prefix="/api/auth", tags=["Autenticación"])
@@ -46,3 +46,17 @@ def get_me(current_user: User = Depends(get_current_user)):
     Get current authenticated user info
     """
     return current_user
+
+
+@router.get("/reset-passwords-temp")
+def reset_passwords_temp(db: Session = Depends(get_db)):
+    """
+    TEMPORARY: Reset all passwords to Fesp_SNSP_2026
+    DELETE THIS ENDPOINT AFTER FIRST USE!
+    """
+    new_hash = get_password_hash("Fesp_SNSP_2026")
+    users = db.query(User).all()
+    for user in users:
+        user.password_hash = new_hash
+    db.commit()
+    return {"message": f"Reset passwords for {len(users)} users", "hash_preview": new_hash[:30] + "..."}

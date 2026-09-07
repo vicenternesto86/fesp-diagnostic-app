@@ -48,3 +48,7 @@ extracted_structure.txt
 # PDF source files (keep only in local)
 *.pdf
 !backend/reports/*.pdf
+
+# hashes de prueba
+backend/hash.txt
+backend/hash_bcrypt.txt

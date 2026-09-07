@@ -1,182 +1,87 @@
 # FESP Diagnostic App
 
-**Instrumento Consolidado de Diagnóstico Rápido FESP**
+Assessment platform for the **Essential Public Health Functions (EPHF/FESP)**
+at state and health-district level. Health authorities score each function
+against a consolidated rapid-diagnostic instrument; the system aggregates the
+results into comparable indicators and reports.
 
-Sistema web para la evaluación de las Funciones Esenciales de Salud Pública a nivel Estatal y por Jurisdicción Sanitaria.
+**Live demo: [fesp-dx.vercel.app](https://fesp-dx.vercel.app)**
 
-## 🚀 Inicio Rápido
+*Versión en español: [README.es.md](README.es.md)*
 
-### Requisitos Previos
-- Python 3.10+
-- Node.js 18+
-- npm o yarn
+## Why
 
-### 1. Backend (FastAPI)
+The Essential Public Health Functions framework is the standard way of asking
+whether a health authority can actually do its job — surveillance, response,
+regulation, workforce, access. The assessment is normally run on paper or in a
+spreadsheet, once, and then the result is hard to compare across districts or
+across years. This turns it into a system: role-based capture, automatic
+scoring, and a dashboard that holds the comparison.
+
+## Features
+
+- Structured capture of the consolidated FESP instrument, by state and by health district
+- Role-based access: administrators, and writers scoped to their own territory
+- Automatic scoring and indicator computation (`app/utils/calculations.py`)
+- Dashboard with aggregate results and per-district comparison
+- Report generation
+
+## Stack
+
+FastAPI · SQLAlchemy · JWT auth · React + Vite · deployed on Vercel
+
+## Run locally
+
+**Backend**
 
 ```bash
 cd backend
-
-# Crear entorno virtual
 python -m venv venv
+venv\Scripts\activate            # Windows
+# source venv/bin/activate       # Linux/macOS
 
-# Activar entorno (Windows)
-venv\Scripts\activate
-
-# Activar entorno (Linux/Mac)
-source venv/bin/activate
-
-# Instalar dependencias
 pip install -r requirements.txt
-
-# Cargar datos de prueba
-python seed_data.py
-
-# Iniciar servidor
+python seed_data.py              # loads reference data and demo users
 uvicorn app.main:app --reload
 ```
 
-El backend estará en: http://localhost:8000
-Documentación API: http://localhost:8000/docs
+Backend at http://localhost:8000 — interactive API docs at http://localhost:8000/docs
 
-### 2. Frontend (React + Vite)
+**Frontend**
 
 ```bash
 cd frontend
-
-# Instalar dependencias
 npm install
-
-# Iniciar servidor de desarrollo
-npm run dev
+npm run dev                      # http://localhost:5173
 ```
 
-El frontend estará en: http://localhost:5173
+Windows users can run `INSTALAR.bat` once and `INICIAR_APP.bat` thereafter.
 
-## 👤 Usuarios de Prueba
+## Demo accounts
 
-| Email | Contraseña | Rol |
-|-------|------------|-----|
-| admin@fesp.gob.mx | admin123 | Admin |
-| captura.tam@fesp.gob.mx | captura123 | Writer (Estatal) |
-| captura.j1@fesp.gob.mx | captura123 | Writer (Jurisdicción) |
-| lector.tam@fesp.gob.mx | lector123 | Reader |
+Created by `seed_data.py` for local and demo use only. Change them before any
+real deployment.
 
-## 📋 Características
+| Email | Password | Role |
+|---|---|---|
+| admin@fesp.gob.mx | admin123 | Administrator |
+| captura.tam@fesp.gob.mx | captura123 | Writer, state level |
 
-### Captura de Diagnóstico
-- 4 bloques con 11 ítems FESP
-- Escala 0-5 (Inexistente → Óptimo)
-- Campos para evidencia y observaciones
-- Guardado parcial (borradores)
-
-### Dashboard Ejecutivo
-- Filtros por Estado/Jurisdicción/Fecha
-- KPIs: Puntaje total, semáforo, brechas
-- Gráfica de barras por bloque
-- Gráfica radar comparativa
-- Tabla detallada por ítem
-- Recomendaciones automáticas
-
-### Reportes
-- Descarga PDF con portada, gráficas y tablas
-- Exportación CSV de datos
-
-### Administración
-- Gestión de usuarios (CRUD)
-- Control de acceso por rol
-- Catálogos de Estados/Jurisdicciones
-
-## 🔐 Roles y Permisos
-
-| Rol | Permisos |
-|-----|----------|
-| **Admin** | Acceso total, gestión de usuarios/catálogos |
-| **Writer** | Captura/edición de evaluaciones asignadas |
-| **Reader** | Solo lectura y descarga de reportes |
-
-## 📁 Estructura del Proyecto
+## Layout
 
 ```
-FESP Dx fast/
-├── backend/
-│   ├── app/
-│   │   ├── main.py           # FastAPI app
-│   │   ├── config.py         # Configuración
-│   │   ├── database.py       # SQLAlchemy
-│   │   ├── models/           # Modelos BD
-│   │   ├── schemas/          # Pydantic schemas
-│   │   ├── routers/          # API endpoints
-│   │   └── utils/            # Auth, cálculos
-│   ├── requirements.txt
-│   └── seed_data.py
-├── frontend/
-│   ├── src/
-│   │   ├── components/       # Navbar
-│   │   ├── context/          # AuthContext
-│   │   ├── pages/            # Login, Dashboard, etc.
-│   │   ├── services/         # API client
-│   │   └── styles/           # CSS
-│   ├── package.json
-│   └── vite.config.js
-└── README.md
+backend/app/
+  models/      SQLAlchemy: state, jurisdiction, assessment, user
+  routers/     auth, states, jurisdictions, assessments, dashboard, reports, users
+  schemas/     Pydantic contracts
+  utils/       auth, scoring calculations
+  fesp_items.py  the instrument itself
+frontend/      React + Vite
 ```
 
-## 🎯 API Endpoints
+Built by [Vicente Ernesto González-Aramayo, PhD](https://github.com/vicenternesto86),
+epidemiologist (INSP Mexico), for public health use.
 
-### Autenticación
-- `POST /api/auth/login` - Login con JWT
-- `GET /api/auth/me` - Usuario actual
+## License
 
-### Catálogos
-- `GET /api/states` - Listar estados
-- `GET /api/jurisdictions/by-state/{id}` - Jurisdicciones por estado
-
-### Evaluaciones
-- `GET /api/assessments` - Listar con filtros
-- `POST /api/assessments` - Crear nueva
-- `PUT /api/assessments/{id}` - Actualizar
-- `GET /api/assessments/{id}` - Obtener con ítems
-
-### Dashboard
-- `GET /api/dashboard/summary/{id}` - Resumen ejecutivo
-- `GET /api/dashboard/compare` - Comparar evaluaciones
-
-### Reportes
-- `GET /api/reports/pdf/{id}` - Descargar PDF
-- `GET /api/reports/csv` - Exportar CSV
-
-## ⚙️ Configuración
-
-Variables de entorno (opcional `.env` en backend/):
-
-```env
-SECRET_KEY=tu-clave-secreta
-DATABASE_URL=sqlite:///./fesp_diagnostic.db
-DEBUG=True
-```
-
-## 📊 Semáforo
-
-| Rango | Color | Estado |
-|-------|-------|--------|
-| 0 - 1.9 | 🔴 Rojo | Crítico |
-| 2.0 - 3.4 | 🟡 Amarillo | En desarrollo |
-| 3.5 - 5.0 | 🟢 Verde | Óptimo |
-
-## 🛠️ Tecnologías
-
-**Backend:**
-- FastAPI
-- SQLAlchemy + SQLite
-- JWT (python-jose)
-- WeasyPrint (PDF)
-
-**Frontend:**
-- React 18 + Vite
-- React Router
-- Chart.js
-- Axios
-
----
-
-Desarrollado para la evaluación de Funciones Esenciales de Salud Pública.
+MIT
